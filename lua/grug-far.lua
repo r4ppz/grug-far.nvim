@@ -165,6 +165,8 @@ end
 function grug_far._createWindow(context)
   context.prevWin = vim.api.nvim_get_current_win()
   local prevBuf = vim.api.nvim_win_get_buf(context.prevWin)
+  context.prevBuf = prevBuf
+  context.prevCursorPos = vim.api.nvim_win_get_cursor(context.prevWin)
   context.prevBufName = vim.api.nvim_buf_get_name(prevBuf)
   context.prevBufFiletype = vim.bo[prevBuf].filetype
 
@@ -173,6 +175,41 @@ function grug_far._createWindow(context)
   context.initialWin = win
 
   return win
+end
+
+--- restores focus to prevBuf/prevWin
+---@param context grug.far.Context
+function grug_far.restoreToPrevBuf(context)
+  local prevBuf = context.prevBuf
+  local prevWin = context.prevWin
+  local prevCursorPos = context.prevCursorPos
+
+  if not (prevBuf and vim.api.nvim_buf_is_valid(prevBuf)) then
+    return
+  end
+
+  if vim.api.nvim_buf_get_name(prevBuf) == '' then
+    return
+  end
+
+  local targetWin = prevWin
+  if not (targetWin and vim.api.nvim_win_is_valid(targetWin)) then
+    targetWin = vim.fn.bufwinid(prevBuf)
+  end
+
+  if not (targetWin and targetWin ~= -1) then
+    return
+  end
+
+  local existingBuf = vim.api.nvim_win_get_buf(targetWin)
+  if existingBuf ~= prevBuf then
+    vim.api.nvim_win_set_buf(targetWin, prevBuf)
+  end
+  vim.api.nvim_set_current_win(targetWin)
+
+  if prevCursorPos then
+    pcall(vim.api.nvim_win_set_cursor, targetWin, prevCursorPos)
+  end
 end
 
 ---@param context grug.far.Context

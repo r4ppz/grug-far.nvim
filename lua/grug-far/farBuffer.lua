@@ -6,6 +6,36 @@ local inputs = require('grug-far.inputs')
 
 local M = {}
 
+--- shows prevBuf in target window when cursor is on input zone
+---@param context grug.far.Context
+local function showPrevBufInTarget(context)
+  local prevBuf = context.prevBuf
+  if not (prevBuf and vim.api.nvim_buf_is_valid(prevBuf)) then
+    return
+  end
+
+  if vim.api.nvim_buf_get_name(prevBuf) == '' then
+    return
+  end
+
+  local win = context.prevWin
+  if not (win and vim.api.nvim_win_is_valid(win)) then
+    win = vim.fn.bufwinid(prevBuf)
+  end
+
+  if not (win and win ~= -1) then
+    return
+  end
+
+  if vim.api.nvim_win_get_buf(win) ~= prevBuf then
+    vim.api.nvim_win_set_buf(win, prevBuf)
+  end
+
+  if context.prevCursorPos then
+    pcall(vim.api.nvim_win_set_cursor, win, context.prevCursorPos)
+  end
+end
+
 --- set up all key maps
 ---@param buf integer
 ---@param context grug.far.Context
@@ -128,6 +158,7 @@ local function getActions(buf, context)
           get_inst():open_location()
         else
           get_inst():goto_first_input()
+          showPrevBufInTarget(context)
         end
       end,
     },
@@ -141,6 +172,7 @@ local function getActions(buf, context)
           get_inst():open_location()
         else
           get_inst():goto_first_input()
+          showPrevBufInTarget(context)
         end
       end,
     },
