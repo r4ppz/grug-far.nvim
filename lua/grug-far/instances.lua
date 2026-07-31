@@ -333,6 +333,7 @@ function inst:hide()
   if win ~= -1 then
     vim.api.nvim_win_close(win, true)
   end
+  require('grug-far').restoreToPrevBuf(self._context)
 end
 
 --- opens/focuses grug-far window

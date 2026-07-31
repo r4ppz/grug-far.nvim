@@ -32,6 +32,10 @@ local function gotoLocation(params)
     targetWin,
     { location.lnum or 1, location.col and location.col - 1 or 0 }
   )
+
+  context.prevBuf = vim.fn.bufnr(location.filename)
+  context.prevWin = targetWin
+  context.prevCursorPos = vim.api.nvim_win_get_cursor(targetWin)
 end
 
 return gotoLocation

@@ -62,6 +62,8 @@
 ---@field state grug.far.State
 ---@field initialWin? integer
 ---@field prevWin? integer
+---@field prevBuf? integer
+---@field prevCursorPos? integer[]
 ---@field prevBufName? string
 ---@field prevBufFiletype? string
 ---@field actions grug.far.Action[]

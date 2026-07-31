@@ -34,6 +34,8 @@ local function close(params)
   if shouldCloseWin then
     vim.fn.win_execute(win, 'quit!')
   end
+
+  require('grug-far').restoreToPrevBuf(context)
 end
 
 return close
