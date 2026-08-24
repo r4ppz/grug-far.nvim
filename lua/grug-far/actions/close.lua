@@ -24,6 +24,7 @@ local function close(params)
   end
 
   local win = vim.fn.bufwinid(buf)
+  local isCurrentWin = vim.api.nvim_get_current_win() == win
   vim.api.nvim_buf_delete(buf, { force = true })
 
   -- only close window if we created a new window initially, and current window is that window
@@ -35,7 +36,10 @@ local function close(params)
     vim.fn.win_execute(win, 'quit!')
   end
 
-  require('grug-far').restoreToPrevBuf(context)
+  -- only restore if the user was in the grug-far window when closing
+  if isCurrentWin then
+    require('grug-far').restoreToPrevBuf(context)
+  end
 end
 
 return close
