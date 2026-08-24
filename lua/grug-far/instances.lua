@@ -328,10 +328,13 @@ end
 function inst:hide()
   self:_ensure_valid()
   local win = vim.fn.bufwinid(self._buf)
+  local isCurrentWin = win ~= -1 and vim.api.nvim_get_current_win() == win
   if win ~= -1 then
     vim.api.nvim_win_close(win, true)
   end
-  require('grug-far').restoreToPrevBuf(self._context)
+  if isCurrentWin then
+    require('grug-far').restoreToPrevBuf(self._context)
+  end
 end
 
 --- opens/focuses grug-far window
